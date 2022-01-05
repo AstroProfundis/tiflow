@@ -72,7 +72,8 @@ endif
 GITHASH := $(shell git rev-parse HEAD)
 GITBRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 GOVERSION := $(shell go version)
-LDFLAGS += -buildid $(shell git rev-parse HEAD)
+BUILDID ?= $(GITHASH)
+LDFLAGS += -buildid $(BUILDID)
 
 # CDC LDFLAGS.
 LDFLAGS += -X "$(CDC_PKG)/pkg/version.ReleaseVersion=$(RELEASE_VERSION)"
