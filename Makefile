@@ -63,10 +63,16 @@ ifeq ($(RELEASE_VERSION),)
 	endif
 endif
 
-BUILDTS := $(shell date -u '+%Y-%m-%d %H:%M:%S')
+DATE_FMT = +%Y-%m-%d %I:%M:%S
+ifdef SOURCE_DATE_EPOCH
+    BUILDTS ?= $(shell date -u -d "@$(SOURCE_DATE_EPOCH)" "$(DATE_FMT)" 2>/dev/null || date -u -r "$(SOURCE_DATE_EPOCH)" "$(DATE_FMT)" 2>/dev/null || date -u "$(DATE_FMT)")
+else
+    BUILDTS ?= $(shell date "$(DATE_FMT)")
+endif
 GITHASH := $(shell git rev-parse HEAD)
 GITBRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 GOVERSION := $(shell go version)
+LDFLAGS += -buildid $(shell git rev-parse HEAD)
 
 # CDC LDFLAGS.
 LDFLAGS += -X "$(CDC_PKG)/pkg/version.ReleaseVersion=$(RELEASE_VERSION)"
